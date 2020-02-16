@@ -7,16 +7,19 @@ module Jekyll
     include Jekyll::LiquidExtensions
 
     SERVERS      = 4
-    DEFAULT_SIZE = 40
-    API_VERSION  = 3
+    DEFAULT_SIZE = "40"
+    API_VERSION  = "3"
 
     def initialize(_tag_name, text, _tokens)
       super
-      @text = text
-      @markup = Liquid::Template.parse(text)
+      @text = text.strip
+      @markup = Liquid::Template.parse(@text)
 
       @custom_host = ENV["PAGES_AVATARS_URL"]
       @custom_host = "" unless @custom_host.is_a?(String)
+
+      @size = compute_size
+      @user_variable = extract_user_variable
     end
 
     def render(context)
@@ -34,7 +37,7 @@ module Jekyll
         "alt"                 => username,
         "width"               => size,
         "height"              => size,
-        "data-proofer-ignore" => true
+        "data-proofer-ignore" => "true"
       }
 
       if lazy_load?
@@ -53,26 +56,26 @@ module Jekyll
       @text.include?("lazy=true")
     end
 
-    def username
+    def extract_user_variable
       matches = @text.match(%r!\buser=([\w\.]+)\b!)
-      if matches
-        lookup_variable(@context, matches[1])
-      elsif @text.include?(" ")
-        result = @text.split(" ")[0]
-        result.sub!("@", "")
-        result
-      else
-        @text
-      end
+      matches[1] if matches
     end
 
-    def size
-      matches = @text.match(%r!\bsize=(\d+)\b!i)
-      matches ? matches[1].to_i : DEFAULT_SIZE
+    def username
+      return lookup_variable(@context, @user_variable) if @user_variable
+
+      result = @text.include?(" ") ? @text.split(" ")[0] : @text
+      result.start_with?("@") ? result.sub("@", "") : result
     end
+
+    def compute_size
+      matches = @text.match(%r!\bsize=(\d+)\b!i)
+      matches ? matches[1] : DEFAULT_SIZE
+    end
+    attr_reader :size
 
     def path(scale = 1)
-      "#{username}?v=#{API_VERSION}&s=#{size * scale}"
+      "#{username}?v=#{API_VERSION}&s=#{scale == 1 ? size : (size.to_i * scale)}"
     end
 
     def server_number
@@ -114,7 +117,7 @@ module Jekyll
 
     # See http://primercss.io/avatars/#small-avatars
     def classes
-      size < 48 ? "avatar avatar-small" : "avatar"
+      size.to_i < 48 ? "avatar avatar-small" : "avatar"
     end
   end
 end
