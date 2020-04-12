@@ -13,5 +13,9 @@ matrix:
       name: "Profile Memory Usage"
       script: bundle exec ruby script/memprof
     - rvm: *ruby
-      name: "Benchmark"
+      name: "Benchmark Default Host"
+      script: script/cibench
+    - rvm: *ruby
+      env: PAGES_AVATARS_URL="http://avatars.example.com"
+      name: "Benchmark Custom Host"
       script: script/cibench
