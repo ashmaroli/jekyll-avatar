@@ -4,10 +4,14 @@ set -e
 
 cyanize() { echo "\e[36m\n$1\e[0m"; }
 
-echo -e "$(cyanize 'Running benchmark on current branch..')"
-ruby script/benchmark.rb
+if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+  echo -e "$(cyanize 'Skipping since not a pull-request CI build')"
+else
+  echo -e "$(cyanize 'Running benchmark on current branch..')"
+  ruby script/benchmark.rb
 
-echo -e "$(cyanize 'Running benchmark on master branch..')"
-git fetch origin master
-git checkout -b master FETCH_HEAD
-ruby script/benchmark.rb
+  echo -e "$(cyanize 'Running benchmark on master branch..')"
+  git fetch origin master
+  git checkout -b master FETCH_HEAD
+  ruby script/benchmark.rb
+fi
