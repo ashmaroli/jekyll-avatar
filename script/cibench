@@ -2,7 +2,7 @@
 
 set -e
 
-cyanize() { echo "\e[36m\n$1\e[0m"; }
+cyanize() { echo ""; echo "\e[36m$1\e[0m"; }
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
   echo -e "$(cyanize 'Skipping since not a pull-request CI build')"
