@@ -2,10 +2,12 @@
 
 set -e
 
-echo -e "\nRunning benchmark on current branch.."
+cyanize() { echo "\e[36m\n$1\e[0m"; }
+
+echo -e "$(cyanize 'Running benchmark on current branch..')"
 ruby script/benchmark.rb
 
-echo -e "\nRunning benchmark on master branch.."
+echo -e "$(cyanize 'Running benchmark on master branch..')"
 git fetch origin master
 git checkout -b master FETCH_HEAD
 ruby script/benchmark.rb
