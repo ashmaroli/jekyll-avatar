@@ -12,3 +12,6 @@ matrix:
     - rvm: *ruby
       name: "Profile Memory Usage"
       script: bundle exec ruby script/memprof
+    - rvm: *ruby
+      name: "Benchmark"
+      script: script/cibench

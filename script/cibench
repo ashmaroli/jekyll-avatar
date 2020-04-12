@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo -e "\nRunning benchmark on current branch.."
+ruby script/benchmark.rb
+
+echo -e "\nRunning benchmark on master branch.."
+git fetch origin master
+git checkout -b master FETCH_HEAD
+ruby script/benchmark.rb
